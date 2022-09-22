@@ -1,0 +1,5 @@
+[
+    { "directory": "./",
+      "command": "gcc multigrep.c -o miltigrep",
+      "file": "file.cc" }
+  ]
