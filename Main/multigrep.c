@@ -61,12 +61,13 @@ int regex_file(char filename[], regex_t regex) {
     }
 
     fclose(file_input);
-    printf("\n");
+    //printf("\n");
     return 0;
 }
 
 void *thread_func(void *threadarg) {
-    int status;  // status para el mutex
+    int status;   // status para el mutex
+    int current;  // el index del que vamos a analizar
     struct thread_list *my_data;
     my_data = (struct thread_list *)threadarg;
 
@@ -75,13 +76,16 @@ void *thread_func(void *threadarg) {
     while (my_data->index < my_data->size) {
         status = pthread_mutex_lock(&mutex);
         if (my_data->index < my_data->size) {  // hacemos una segunda verificación en caso de que una condicion de carrera aumente el index en medio ciclo
-            printf("Soy el thread #: %d\tMi archivo es: #%s\n", thread_id, my_data->files[my_data->index]);
-            int return_value = regex_file(my_data->files[my_data->index], my_data->regex);  // le hacemoss el regex al archivo
+            current = my_data->index;
             my_data->index += 1;
         }
         status = pthread_mutex_unlock(&mutex);
+
+        //printf("Soy el thread #: %d\tMi archivo es: #%s\n", thread_id, my_data->files[current]);
+        int return_value = regex_file(my_data->files[current], my_data->regex);  // le hacemoss el regex al archivo
+
     }
-    printf("Saliendo del thread: %d\n", thread_id);
+    //printf("Saliendo del thread: %d\n", thread_id);
     pthread_exit(NULL);
 }
 
@@ -120,7 +124,7 @@ int main(int argc, char *argv[]) {
 
         status = pthread_mutex_init(&mutex, NULL);
         for (i = 0; i < NUM_THREADS; i++) {  // creamos los threads
-            printf("Creando el thread %d\n", i);
+            //printf("Creando el thread %d\n", i);
             lista_archivos.thread_id = i;
             return_code = pthread_create(&threads[i], NULL, thread_func, (void *)&lista_archivos);
             if (return_code) {
@@ -128,11 +132,11 @@ int main(int argc, char *argv[]) {
                 exit(-1);
             }
         }
-        for (int i = 0; i < NUM_THREADS; i++) //para esperar a que todos los threads terminen antes de terminar el programa
+        for (int i = 0; i < NUM_THREADS; i++)  // para esperar a que todos los threads terminen antes de terminar el programa
             status = pthread_join(threads[i], NULL);
 
         status = pthread_mutex_destroy(&mutex);
-        pthread_exit(NULL);
+        
 
         // aqui hay que meter los hilos de ejecucion
         /*
@@ -145,7 +149,7 @@ int main(int argc, char *argv[]) {
 
     end = clock();
     execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Tiempo de ejecución en segundos : %f \n", execution_time);
-
+    printf("\n\nTiempo de ejecución en segundos : %f \n", execution_time);
+    pthread_exit(NULL);
     exit(0);
 }
