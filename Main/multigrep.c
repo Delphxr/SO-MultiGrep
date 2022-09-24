@@ -11,7 +11,7 @@
 
 #define REGEXSZ 128    // tamanno maximo de un regex
 #define LINESZ 1024    // tamanno maximo de una linea en un archivo
-#define NUM_THREADS 5  // numero de hilos en los que va a correr el programa
+#define NUM_THREADS 3  // numero de hilos en los que va a correr el programa
 
 pthread_mutex_t mutex;
 
@@ -20,7 +20,7 @@ struct thread_list {
     int size;      // tamaño del array de archivos
     int index;     // para navegar la lista
     int thread_id;
-    regex_t regex;
+    regex_t regex; 
 };
 
 void menu() {
@@ -89,8 +89,23 @@ void *thread_func(void *threadarg) {
     pthread_exit(NULL);
 }
 
+// recibe el nombre de un archivo y hace un backup del mismo
+int log_time(double time) {
+    FILE *logs;  // variables para los archivos
+
+
+    logs = fopen("logs.txt", "a");
+
+    fprintf(logs,"%f\n",time);
+
+    fclose(logs);
+    return 0;
+}
+
+
+
 int main(int argc, char *argv[]) {
-    // printf("start\n");
+
     pthread_t threads[NUM_THREADS];
     int i;
     int return_code;
@@ -150,6 +165,7 @@ int main(int argc, char *argv[]) {
     end = clock();
     execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
     printf("\n\nTiempo de ejecución en segundos : %f \n", execution_time);
+    log_time(execution_time);
     pthread_exit(NULL);
     exit(0);
 }
