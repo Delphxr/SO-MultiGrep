@@ -1,3 +1,0 @@
-{
-    "sonarlint.pathToCompileCommands": "${workspaceFolder}/Main/compile_commands.json"
-}
