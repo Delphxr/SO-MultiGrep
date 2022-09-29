@@ -11,7 +11,7 @@
 
 #define REGEXSZ 128    // tamanno maximo de un regex
 #define LINESZ 1024    // tamanno maximo de una linea en un archivo
-#define NUM_THREADS 3  // numero de hilos en los que va a correr el programa
+#define NUM_THREADS 10  // numero de hilos en los que va a correr el programa
 
 pthread_mutex_t mutex;
 
@@ -72,6 +72,7 @@ void *thread_func(void *threadarg) {
     my_data = (struct thread_list *)threadarg;
 
     int thread_id = my_data->thread_id;  // guardamos nuestro id
+    //pthread_detach(pthread_self());
 
     while (my_data->index < my_data->size) {
         status = pthread_mutex_lock(&mutex);
@@ -96,7 +97,7 @@ int log_time(double time) {
 
     logs = fopen("logs.txt", "a");
 
-    fprintf(logs,"%f\n",time);
+    fprintf(logs,"%d, %f\n",NUM_THREADS, time); //le mandamos al archivo la cantidd de thread y el tiempo de ejecución, para facilidad de analizis 
 
     fclose(logs);
     return 0;
