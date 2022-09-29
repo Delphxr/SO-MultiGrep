@@ -76,14 +76,15 @@ void *thread_func(void *threadarg) {
 
     while (my_data->index < my_data->size) {
         status = pthread_mutex_lock(&mutex);
-        if (my_data->index < my_data->size) {  // hacemos una segunda verificación en caso de que una condicion de carrera aumente el index en medio ciclo
+        // hacemos una segunda verificación en caso de condicion de carrera
+        if (my_data->index < my_data->size) {  
             current = my_data->index;
             my_data->index += 1;
         }
         status = pthread_mutex_unlock(&mutex);
 
         //printf("Soy el thread #: %d\tMi archivo es: #%s\n", thread_id, my_data->files[current]);
-        int return_value = regex_file(my_data->files[current], my_data->regex);  // le hacemoss el regex al archivo
+        regex_file(my_data->files[current], my_data->regex);  // regex al archivo
 
     }
     //printf("Saliendo del thread: %d\n", thread_id);
@@ -118,6 +119,7 @@ int main(int argc, char *argv[]) {
 
     menu();
     start = clock();
+    
 
     // revisamos si hay mas de 2 argumentos (un regex y un archivo como minimo), el argumento 0 es el nombre del programa
     if (argc >= 3) {
@@ -148,6 +150,7 @@ int main(int argc, char *argv[]) {
                 exit(-1);
             }
         }
+        
         for (int i = 0; i < NUM_THREADS; i++)  // para esperar a que todos los threads terminen antes de terminar el programa
             status = pthread_join(threads[i], NULL);
 
